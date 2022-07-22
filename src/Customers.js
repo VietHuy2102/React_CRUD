@@ -2,11 +2,12 @@ import React from "react";
 
 class Customers extends React.Component {
     constructor(props) {
-        super(props);
+        super(props)
         this.state = {
             customers: [],
             action: "list",
             form: {
+                id: 1,
                 name: "",
                 email: "",
                 phone: ""
@@ -33,9 +34,10 @@ class Customers extends React.Component {
         this.getUsers()
 
     }
-    componentDidUpdate(prevProps, prevState, snapshot) {
-        this.getUsers()
-    }
+
+    // componentDidUpdate(prevProps, prevState, snapshot) {
+    //     this.getUsers()
+    // }
 
     customerRender = () => {
         return this.state.customers.map((customer, index) => {
@@ -49,11 +51,12 @@ class Customers extends React.Component {
                         <a href="#" className="btn btn-warning btn-sm" onClick={(e) => {
                             e.preventDefault();
                             this.handleAction("update")
-                            console.log(e.target.dataset.id)
+                            this.fillForm(e);
                         }} data-id={customer.id}>Sửa</a>
 
                     </td>
-                    <td><a href="#" data-id={customer.id} className="btn btn-danger btn-sm" onClick={this.deleteCustomer}>Xóa</a></td>
+                    <td><a href="#" data-id={customer.id} className="btn btn-danger btn-sm"
+                           onClick={this.deleteCustomer}>Xóa</a></td>
                 </tr>
             )
         })
@@ -114,25 +117,29 @@ class Customers extends React.Component {
             case "update":
                 jsx = <>
                     <h1>Cập NHật Khách Hàng</h1>
-                    <button className="btn btn-primary" type="button" onClick={() => {
+                    <button className="btn btn-primary" type="button" onClick={(e) => {
                         this.handleAction("list")
+
                     }}>Quay lại
                     </button>
                     <hr/>
                     <form>
                         <div className="mb-3">
                             <label>Tên</label>
-                            <input type="text" className="form-control" placeholder="Tên..."/>
+                            <input type="text" value={this.state.form.name} name="name" className="form-control"
+                                   placeholder="Tên..." onChange={this.changValue}/>
                         </div>
                         <div className="mb-3">
                             <label>Email</label>
-                            <input type="email" className="form-control" placeholder="Email..."/>
+                            <input type="email" value={this.state.form.email} name="email" className="form-control"
+                                   placeholder="Email..." onChange={this.changValue}/>
                         </div>
                         <div className="mb-3">
                             <label>Phone</label>
-                            <input type="text" className="form-control" placeholder="Điện thoại..."/>
+                            <input type="text" value={this.state.form.phone} name="phone" className="form-control"
+                                   placeholder="Điện thoại..." onChange={this.changValue}/>
                         </div>
-                        <button className="btn btn-primary" type="submit">
+                        <button className="btn btn-primary" type="submit" onClick={this.updateCustomer}>
                             Lưu thay đổi
                         </button>
                     </form>
@@ -199,19 +206,20 @@ class Customers extends React.Component {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(this.state.form)
+                body: JSON.stringify({name, email, phone})
             }).then(response => response.json())
                 .then(customer => {
-                 if (typeof customer === "object" ){
-                     this.handleAction("list")
-                     this.setState({
-                         form: {
-                             name: "",
-                             email: "",
-                             phone: ""
-                         }
-                     })
-                 }
+                    if (typeof customer === "object") {
+                        this.handleAction("list")
+                        this.setState({
+                            form: {
+                                name: "",
+                                email: "",
+                                phone: ""
+                            },
+                            customers: this.state.customers.concat(customer)
+                        })
+                    }
                 })
         }
         this.setState({
@@ -232,19 +240,50 @@ class Customers extends React.Component {
 
     }
 
-    deleteCustomer =(e)=>{
-        this.setState(this.state.customers.filter((customers)=>{
-            if (this.state.customers.id === e.target.dataset.id){
-                return false
-            }
+    deleteCustomer = (e) => {
+        console.log(e.target.dataset.id)
+        fetch(`http://localhost:3004/customers/${e.target.dataset.id}`, {
+            method: 'DELETE',
+        }).then(() => {
+            this.setState({
+                customers: this.state.customers.filter((customer) => {
+                    return customer.id.toString() !== e.target.dataset.id
+                })
+            })
+        })
 
-        }))
-        }
+    }
 
-
-
-
-
+    updateCustomer = (e) => {
+        e.preventDefault()
+        fetch(`http://localhost:3004/customers/${this.state.form.id}`, {
+            method: 'PUT',
+            body: JSON.stringify(this.state.form),
+            headers: {
+                'Content-type': 'application/json; charset=UTF-8',
+            },
+        })
+            .then((response) => response.json())
+            .then((customer) => {
+                this.setState({
+                    customers: this.state.customers.map((item) => {
+                        if (customer.id !== item.id) {
+                            return item
+                        }
+                        return customer
+                    })
+                })
+                this.handleAction("list")
+            });
+    }
+    fillForm = (e) => {
+        e.preventDefault()
+        this.setState({
+            form: this.state.customers.find(customer => {
+                return customer.id.toString() === e.target.dataset.id
+            })
+        })
+    }
 
     render() {
         return (

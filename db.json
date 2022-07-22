@@ -1,40 +1,22 @@
 {
   "customers": [
     {
-      "name": "sukibachtung",
+      "name": "huy234",
       "email": "im.angel_00@yahoo.com",
-      "phone": "0979412859",
-      "id": 1
-    },
-    {
-      "name": "admin",
-      "email": "nguyenviethuy1004@gmail.com",
       "phone": "0979412859",
       "id": 2
     },
     {
-      "name": "dsadsad",
-      "email": "cuopbiensoma_teen9x@yahoo.com",
+      "name": "abc",
+      "email": "im.angel_00@yahoo.com",
       "phone": "0979412859",
       "id": 3
     },
     {
-      "name": "a",
-      "email": "nguyenviethuy1002@gmail.com",
+      "name": "sukibachtung1",
+      "email": "1.angel_00@yahoo.com",
       "phone": "0979412859",
       "id": 4
-    },
-    {
-      "name": "sukibachtung",
-      "email": "nguyenviethuy1004@gmail.com",
-      "phone": "0979412859",
-      "id": 5
-    },
-    {
-      "name": "admin",
-      "email": "im1.angel_00@yahoo.com",
-      "phone": "213213123",
-      "id": 6
     }
   ]
 }
